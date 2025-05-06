@@ -22,13 +22,31 @@ class EventDTO {
       }
     }
 
-    if (!isUpdate || data.event_time !== undefined) {
-      if (!data.event_time) {
-        errors.push('Event time is required');
+    // Validasi event_start_time
+    if (!isUpdate || data.event_start_time !== undefined) {
+      if (!data.event_start_time) {
+        errors.push('Event start time is required');
       } else {
-        const timestamp = Date.parse(data.event_time);
+        const timestamp = Date.parse(data.event_start_time);
         if (isNaN(timestamp)) {
-          errors.push('Event time must be a valid date');
+          errors.push('Event start time must be a valid date');
+        }
+      }
+    }
+
+    // Validasi event_end_time
+    if (!isUpdate || data.event_end_time !== undefined) {
+      if (!data.event_end_time) {
+        errors.push('Event end time is required');
+      } else {
+        const endTimestamp = Date.parse(data.event_end_time);
+        if (isNaN(endTimestamp)) {
+          errors.push('Event end time must be a valid date');
+        } else if (data.event_start_time) {
+          const startTimestamp = Date.parse(data.event_start_time);
+          if (!isNaN(startTimestamp) && endTimestamp <= startTimestamp) {
+            errors.push('Event end time must be after start time');
+          }
         }
       }
     }

@@ -1,4 +1,5 @@
 const { Event, Category, Account } = require('../models');
+const { Op } = require('sequelize');
 
 class EventService {
   static async getAllEvents() {
@@ -54,6 +55,40 @@ class EventService {
     return await Event.findAll({
       where: { category_id: categoryId },
       include: [
+        { model: Account, attributes: ['id', 'username', 'email'] }
+      ]
+    });
+  }
+
+  static async getUpcomingEvents() {
+    const now = new Date();
+    return await Event.findAll({
+      where: {
+        event_start_time: {
+          [Op.gt]: now
+        }
+      },
+      include: [
+        { model: Category, attributes: ['id', 'category_name'] },
+        { model: Account, attributes: ['id', 'username', 'email'] }
+      ],
+      order: [['event_start_time', 'ASC']]
+    });
+  }
+
+  static async getOngoingEvents() {
+    const now = new Date();
+    return await Event.findAll({
+      where: {
+        event_start_time: {
+          [Op.lte]: now
+        },
+        event_end_time: {
+          [Op.gt]: now
+        }
+      },
+      include: [
+        { model: Category, attributes: ['id', 'category_name'] },
         { model: Account, attributes: ['id', 'username', 'email'] }
       ]
     });

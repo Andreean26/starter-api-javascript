@@ -33,7 +33,11 @@ module.exports = {
         type: Sequelize.STRING(200),
         allowNull: false
       },
-      event_time: {
+      event_start_time: {
+        type: Sequelize.DATE,
+        allowNull: false
+      },
+      event_end_time: {
         type: Sequelize.DATE,
         allowNull: false
       },

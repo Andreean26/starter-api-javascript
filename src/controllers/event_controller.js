@@ -40,6 +40,14 @@ class EventController {
         return res.json(ResponseUtil.UnprocessableEntity(validationErrors));
       }
       
+      // Additional validation for times
+      const startTime = new Date(eventData.event_start_time);
+      const endTime = new Date(eventData.event_end_time);
+      
+      if (endTime <= startTime) {
+        return res.json(ResponseUtil.UnprocessableEntity('Event end time must be after start time'));
+      }
+      
       // Check if account exists
       const account = await AccountService.getAccountByUsername(eventData.username);
       if (!account) {
@@ -78,6 +86,33 @@ class EventController {
       const existingEvent = await EventService.getEventById(id);
       if (!existingEvent) {
         return res.json(ResponseUtil.NotFound('Event not found'));
+      }
+      
+      // Additional validation for times if both are provided
+      if (eventData.event_start_time && eventData.event_end_time) {
+        const startTime = new Date(eventData.event_start_time);
+        const endTime = new Date(eventData.event_end_time);
+        
+        if (endTime <= startTime) {
+          return res.json(ResponseUtil.UnprocessableEntity('Event end time must be after start time'));
+        }
+      } 
+      // If only one is provided, validate against existing data
+      else if (eventData.event_start_time) {
+        const startTime = new Date(eventData.event_start_time);
+        const existingEndTime = new Date(existingEvent.event_end_time);
+        
+        if (existingEndTime <= startTime) {
+          return res.json(ResponseUtil.UnprocessableEntity('Event end time must be after new start time'));
+        }
+      }
+      else if (eventData.event_end_time) {
+        const endTime = new Date(eventData.event_end_time);
+        const existingStartTime = new Date(existingEvent.event_start_time);
+        
+        if (endTime <= existingStartTime) {
+          return res.json(ResponseUtil.UnprocessableEntity('New event end time must be after start time'));
+        }
       }
       
       // If username is being updated, check if the new account exists

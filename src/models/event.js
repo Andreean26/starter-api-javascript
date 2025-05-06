@@ -28,9 +28,20 @@ const Event = database.define('Event', {
     type: DataTypes.STRING(200),
     allowNull: false
   },
-  event_time: {
+  event_start_time: {
     type: DataTypes.DATE,
     allowNull: false
+  },
+  event_end_time: {
+    type: DataTypes.DATE,
+    allowNull: false,
+    validate: {
+      isAfterStartTime(value) {
+        if (new Date(value) <= new Date(this.event_start_time)) {
+          throw new Error('End time must be after start time');
+        }
+      }
+    }
   },
   location: {
     type: DataTypes.STRING(255),
