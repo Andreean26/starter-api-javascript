@@ -13,6 +13,10 @@ Event.belongsTo(Category, { foreignKey: 'category_id' });
 Event.hasMany(Participant, { foreignKey: 'event_id' });
 Participant.belongsTo(Event, { foreignKey: 'event_id' });
 
+// Relasi baru: Participant ke Account
+Account.hasMany(Participant, { foreignKey: 'account_id' });
+Participant.belongsTo(Account, { foreignKey: 'account_id', as: 'account' });
+
 module.exports = {
   Account,
   Category,

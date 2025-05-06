@@ -1,23 +1,49 @@
-const { Participant, Event } = require('../models');
+const { Participant, Event, Account } = require('../models');
 
 class ParticipantService {
   static async getAllParticipants() {
     return await Participant.findAll({
-      include: [{ model: Event, attributes: ['id', 'event_name'] }]
+      include: [
+        { model: Event, attributes: ['id', 'event_name'] },
+        { model: Account, attributes: ['id', 'username', 'email', 'phone_number'], as: 'account' } // Tambahkan alias 'account'
+      ]
     });
   }
 
   static async getParticipantById(id) {
     return await Participant.findByPk(id, {
-      include: [{ model: Event, attributes: ['id', 'event_name'] }]
+      include: [
+        { model: Event, attributes: ['id', 'event_name'] },
+        { model: Account, attributes: ['id', 'username', 'email', 'phone_number'], as: 'account' } // Tambahkan alias 'account'
+      ]
     });
   }
 
   static async createParticipant(participantData) {
+    // Jika account_id disediakan, ambil data dari tabel accounts
+    if (participantData.account_id) {
+      const account = await Account.findByPk(participantData.account_id);
+      if (account) {
+        participantData.username = account.username;
+        participantData.email = account.email;
+        participantData.phone_number = account.phone_number;
+      }
+    }
+
     return await Participant.create(participantData);
   }
 
   static async updateParticipant(id, participantData) {
+    // Jika account_id diperbarui, ambil data dari tabel accounts
+    if (participantData.account_id) {
+      const account = await Account.findByPk(participantData.account_id);
+      if (account) {
+        participantData.username = account.username;
+        participantData.email = account.email;
+        participantData.phone_number = account.phone_number;
+      }
+    }
+
     const [updated] = await Participant.update(participantData, {
       where: { id }
     });
@@ -37,7 +63,10 @@ class ParticipantService {
 
   static async getParticipantsByEventId(eventId) {
     return await Participant.findAll({
-      where: { event_id: eventId }
+      where: { event_id: eventId },
+      include: [
+        { model: Account, attributes: ['id', 'username', 'email', 'phone_number'], as: 'account' } // Tambahkan alias 'account'
+      ]
     });
   }
 }

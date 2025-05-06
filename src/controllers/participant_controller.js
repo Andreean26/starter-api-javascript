@@ -1,4 +1,4 @@
-const { ParticipantService, EventService } = require('../services');
+const { ParticipantService, EventService, AccountService } = require('../services');
 const { ParticipantDTO } = require('../dtos');
 const { ResponseUtil } = require('../utils');
 
@@ -44,6 +44,14 @@ class ParticipantController {
       if (!event) {
         return res.json(ResponseUtil.UnprocessableEntity('Event with this ID does not exist'));
       }
+
+      // Check if account exists (if account_id is provided)
+      if (participantData.account_id) {
+        const account = await AccountService.getAccountById(participantData.account_id);
+        if (!account) {
+          return res.json(ResponseUtil.UnprocessableEntity('Account with this ID does not exist'));
+        }
+      }
       
       const newParticipant = await ParticipantService.createParticipant(participantData);
       
@@ -72,12 +80,12 @@ class ParticipantController {
       if (!existingParticipant) {
         return res.json(ResponseUtil.NotFound('Participant not found'));
       }
-      
-      // If event_id is being updated, check if the new event exists
-      if (participantData.event_id) {
-        const event = await EventService.getEventById(participantData.event_id);
-        if (!event) {
-          return res.json(ResponseUtil.UnprocessableEntity('Event with this ID does not exist'));
+
+      // Check if account exists (if updating account_id)
+      if (participantData.account_id) {
+        const account = await AccountService.getAccountById(participantData.account_id);
+        if (!account) {
+          return res.json(ResponseUtil.UnprocessableEntity('Account with this ID does not exist'));
         }
       }
       
