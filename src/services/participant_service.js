@@ -1,4 +1,4 @@
-const { Participant, Event, Account } = require('../models');
+const { Participant } = require('../models');
 
 class ParticipantService {
   static async getAllParticipants() {
@@ -20,16 +20,6 @@ class ParticipantService {
   }
 
   static async createParticipant(participantData) {
-    // Jika account_id disediakan, ambil data dari tabel accounts
-    if (participantData.account_id) {
-      const account = await Account.findByPk(participantData.account_id);
-      if (account) {
-        participantData.username = account.username;
-        participantData.email = account.email;
-        participantData.phone_number = account.phone_number;
-      }
-    }
-
     return await Participant.create(participantData);
   }
 

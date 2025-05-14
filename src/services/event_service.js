@@ -93,6 +93,14 @@ class EventService {
       ]
     });
   }
+
+  static async decrementEventSlots(eventId) {
+    const event = await Event.findByPk(eventId);
+    if (event && event.number_people > 0) {
+      event.number_people -= 1;
+      await event.save();
+    }
+  }
 }
 
 module.exports = EventService;

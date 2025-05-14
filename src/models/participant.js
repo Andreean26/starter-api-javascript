@@ -59,6 +59,10 @@ Participant.associate = (models) => {
     foreignKey: 'account_id',
     as: 'account'
   });
+  Participant.belongsTo(models.Event, {
+    foreignKey: 'event_id',
+    as: 'event'
+  });
 };
 
 module.exports = Participant;

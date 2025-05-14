@@ -11,4 +11,7 @@ router.delete('/participants/:id', ParticipantController.deleteParticipant);
 // Additional route
 router.get('/events/:eventId/participants', ParticipantController.getParticipantsByEventId);
 
+// Endpoint untuk registrasi peserta
+router.post('/register', ParticipantController.registerParticipant);
+
 module.exports = router;

@@ -50,7 +50,7 @@ const Event = database.define('Event', {
   number_people: {
     type: DataTypes.INTEGER,
     allowNull: false,
-    defaultValue: 1
+    defaultValue: 0
   },
   description: {
     type: DataTypes.TEXT,

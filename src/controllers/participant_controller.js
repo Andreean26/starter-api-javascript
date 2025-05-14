@@ -132,6 +132,51 @@ class ParticipantController {
       return res.json(ResponseUtil.InternalServerError());
     }
   }
+
+  static async registerParticipant(req, res) {
+    try {
+      const participantData = req.body;
+
+      // Validasi input data
+      const validationErrors = ParticipantDTO.validate(participantData);
+      if (validationErrors) {
+        return res.json(ResponseUtil.UnprocessableEntity(validationErrors));
+      }
+
+      // Periksa apakah event ada
+      const event = await EventService.getEventById(participantData.event_id);
+      if (!event) {
+        return res.json(ResponseUtil.UnprocessableEntity('Event with this ID does not exist'));
+      }
+
+      // Periksa apakah slot tersedia
+      if (event.number_people <= 0) {
+        return res.json(ResponseUtil.UnprocessableEntity('No slots available for this event'));
+      }
+
+      // Periksa apakah account ada
+      const account = await AccountService.getAccountById(participantData.account_id);
+      if (!account) {
+        return res.json(ResponseUtil.UnprocessableEntity('Account with this ID does not exist'));
+      }
+
+      // Tambahkan data account ke participantData
+      participantData.username = account.username;
+      participantData.email = account.email;
+      participantData.phone_number = account.phone_number;
+
+      // Daftarkan peserta ke tabel participants
+      const newParticipant = await ParticipantService.createParticipant(participantData);
+
+      // Kurangi jumlah slot di tabel events
+      await EventService.decrementEventSlots(participantData.event_id);
+
+      return res.json(ResponseUtil.Created(newParticipant));
+    } catch (error) {
+      console.error('Error registering participant:', error);
+      return res.json(ResponseUtil.InternalServerError());
+    }
+  }
 }
 
 module.exports = ParticipantController;
