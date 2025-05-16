@@ -59,6 +59,11 @@ const Event = database.define('Event', {
   image_url: {
     type: DataTypes.STRING(255),
     allowNull: true
+  },
+  price: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    defaultValue: 0
   }
 }, {
   tableName: 'events',

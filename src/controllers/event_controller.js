@@ -222,6 +222,30 @@ class EventController {
       return res.json(ResponseUtil.InternalServerError());
     }
   }
+
+  static async getEventPricePerPerson(req, res) {
+    try {
+      const eventId = req.params.id;
+      const event = await EventService.getEventById(eventId);
+      if (!event) {
+        return res.json(ResponseUtil.NotFound('Event not found'));
+      }
+      if (!event.number_people || event.number_people === 0) {
+        return res.json(ResponseUtil.UnprocessableEntity('number_people must be greater than 0'));
+      }
+      const pricePerPerson = event.price / event.number_people;
+      return res.json(ResponseUtil.SuccessResponse({
+        event_id: event.id,
+        event_name: event.event_name,
+        price: event.price,
+        number_people: event.number_people,
+        price_per_person: pricePerPerson
+      }));
+    } catch (error) {
+      console.error('Error calculating price per person:', error);
+      return res.json(ResponseUtil.InternalServerError());
+    }
+  }
 }
 
 module.exports = EventController;

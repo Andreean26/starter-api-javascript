@@ -16,6 +16,9 @@ router.post('/events/:id/upload-image', FileUpload.uploadEventImage, EventContro
 router.get('/users/:username/events', EventController.getEventsByUsername);
 router.get('/categories/:categoryId/events', EventController.getEventsByCategory);
 
+// Endpoint untuk mendapatkan price per person
+router.get('/events/:id/price', EventController.getEventPricePerPerson);
+
 module.exports = router;
 
 // Removed the misplaced method. It has been moved to EventController in event_controller.js.
