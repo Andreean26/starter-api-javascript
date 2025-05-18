@@ -1,11 +1,11 @@
-const { Participant } = require('../models');
+const { Participant, Event, Account } = require('../models');
 
 class ParticipantService {
   static async getAllParticipants() {
     return await Participant.findAll({
       include: [
         { model: Event, attributes: ['id', 'event_name'] },
-        { model: Account, attributes: ['id', 'username', 'email', 'phone_number'], as: 'account' } // Tambahkan alias 'account'
+        { model: Account, attributes: ['id', 'username', 'email', 'phone_number'], as: 'account' }
       ]
     });
   }
@@ -14,7 +14,7 @@ class ParticipantService {
     return await Participant.findByPk(id, {
       include: [
         { model: Event, attributes: ['id', 'event_name'] },
-        { model: Account, attributes: ['id', 'username', 'email', 'phone_number'], as: 'account' } // Tambahkan alias 'account'
+        { model: Account, attributes: ['id', 'username', 'email', 'phone_number'], as: 'account' }
       ]
     });
   }
@@ -55,7 +55,7 @@ class ParticipantService {
     return await Participant.findAll({
       where: { event_id: eventId },
       include: [
-        { model: Account, attributes: ['id', 'username', 'email', 'phone_number'], as: 'account' } // Tambahkan alias 'account'
+        { model: Account, attributes: ['id', 'username', 'email', 'phone_number'], as: 'account' }
       ]
     });
   }
